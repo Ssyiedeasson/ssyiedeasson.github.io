@@ -1,5 +1,5 @@
-title: "Pianfan's blog"
-description: "翩帆的个人技术博客"
+title: "Ssy Lives Here"
+description: "Ssy的垃圾桶"
 
 avatar: /images/avatar.jpg
 favicon: /images/favicon.ico
@@ -17,16 +17,16 @@ excerpt_separator: <!-- more -->
 
 footer-links:
   zhihu:
-  email: yunhan.xiong@foxmail.com
+  email: ssyqwq3558@gmail.com
   facebook:
-  github: pianfan
+  github: ssyiedeasson
   rss: true # just type anything here for a working RSS icon
-  x:
+  x:Ssy_SshiOku
   youtube:
 
-footer-text: Copyright (c) 2026 Pianfan
+footer-text: Copyright (c) 2026 Ssy思絲憶
 
-url: https://pianfan.github.io
+url: https://ssyiedeasson.github.io
 
 permalink: /:title/
 paginate_path: /page:num/
@@ -34,17 +34,17 @@ paginate_path: /page:num/
 # Giscus comments — fill repo-id / category-id from https://giscus.app
 # Prerequisites: enable Discussions on the repo, then configure giscus.app
 giscus:
-  repo: pianfan/pianfan.github.io
-  repo-id: R_kgDOLJQ7fQ
+  repo: Ssyiedeasson/ssyiedeasson.github.io
+  repo-id: R_kgDOTWRGNA
   category: Announcements
-  category-id: DIC_kwDOLJQ7fc4CcrSF
+  category-id: DIC_kwDOTWRGNM4DBht9
   mapping: pathname
   reactions-enabled: "1"
   emit-metadata: "0"
   input-position: bottom
   lang: zh-CN
 
-google_analytics: G-PR69HMXJDX
+google_analytics: G-N018XTV209
 
 kramdown:
   input: GFM

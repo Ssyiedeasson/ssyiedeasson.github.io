@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图像横向颜色 → CSS 渐变（纯净版）</title>
+    <style>
+        /* ----- 全局重置 & 字体 ----- */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, system-ui, -apple-system, sans-serif;
+            background: #f5f7fb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+            margin: 0;
+        }
+
+        /* ----- 主卡片 ----- */
+        .app {
+            max-width: 1000px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10), 0 8px 24px rgba(0, 0, 0, 0.04);
+            padding: 36px 40px 44px;
+            transition: box-shadow 0.2s;
+        }
+
+        /* ----- 头部 ----- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            margin-bottom: 28px;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 650;
+            letter-spacing: -0.3px;
+            color: #1a1e2b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 span {
+            background: #eef2f9;
+            padding: 2px 12px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3a4a6b;
+            letter-spacing: 0;
+        }
+        .header .badge {
+            font-size: 13px;
+            color: #6b7a93;
+            background: #f0f3f8;
+            padding: 6px 16px;
+            border-radius: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header .badge svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ----- 上传区域（仅本地） ----- */
+        .upload-zone {
+            border: 2px dashed #d0d8e6;
+            border-radius: 20px;
+            padding: 48px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.25s, background 0.2s, transform 0.15s;
+            background: #fafcff;
+            position: relative;
+        }
+        .upload-zone:hover {
+            border-color: #7f93b5;
+            background: #f6f9ff;
+        }
+        .upload-zone.dragover {
+            border-color: #3b6eff;
+            background: #eef4ff;
+            transform: scale(1.005);
+        }
+        .upload-zone .icon {
+            font-size: 52px;
+            line-height: 1;
+            margin-bottom: 12px;
+            display: block;
+            color: #7a8aa8;
+        }
+        .upload-zone p {
+            font-size: 17px;
+            color: #1f2a3f;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .upload-zone .sub {
+            font-size: 14px;
+            color: #7f8ea8;
+            font-weight: 400;
+        }
+        .upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .upload-zone .hint {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #9aabbf;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .upload-zone .hint span {
+            background: #eef3fa;
+            padding: 2px 14px;
+            border-radius: 20px;
+            color: #4b5e7a;
+        }
+
+        /* ----- 独立 URL 加载区域（与上传分离） ----- */
+        .url-section {
+            margin-top: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 16px;
+            background: #f2f6fe;
+            padding: 12px 20px;
+            border-radius: 60px;
+            border: 1px solid #e2eaf6;
+            justify-content: center;
+        }
+        .url-section .url-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2f405b;
+            white-space: nowrap;
+        }
+        .url-section input[type="text"] {
+            flex: 1;
+            min-width: 220px;
+            padding: 8px 18px;
+            border: 1px solid #d0d8e6;
+            border-radius: 40px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+        .url-section input[type="text"]:focus {
+            border-color: #3b6eff;
+            box-shadow: 0 0 0 3px rgba(59, 110, 255, 0.12);
+        }
+        .url-section button {
+            background: #3b6eff;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 28px;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .url-section button:hover {
+            background: #2a5ae0;
+        }
+        .url-section button:active {
+            transform: scale(0.97);
+        }
+        .url-section .url-hint {
+            font-size: 12px;
+            color: #7f8ea8;
+            margin-left: 2px;
+        }
+
+        /* ----- 结果区域 ----- */
+        .result {
+            margin-top: 32px;
+            display: none;
+            animation: fadeSlide 0.45s ease;
+        }
+        .result.visible {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 预览双栏 */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+        @media (max-width: 620px) {
+            .preview-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .preview-card {
+            background: #f8faff;
+            border-radius: 16px;
+            border: 1px solid #e9eef6;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+        .preview-card:hover {
+            border-color: #cdd8ea;
+        }
+        .preview-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6f829f;
+            padding: 10px 16px 6px;
+            background: #f8faff;
+            border-bottom: 1px solid #edf2fa;
+        }
+        .preview-card .image-wrap {
+            padding: 12px 16px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+            background: #ffffff;
+        }
+        .preview-card .image-wrap img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: contain;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .preview-card .gradient-bar {
+            margin: 0 16px 16px;
+            border-radius: 10px;
+            height: 48px;
+            background: #eef2f9;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: background 0.2s;
+        }
+        .preview-card .gradient-bar .swatch-stops {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2px;
+            pointer-events: none;
+        }
+        .preview-card .gradient-bar .swatch-stops .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+            transform: translateY(0);
+            transition: transform 0.15s;
+        }
+
+        /* 采样点色块展示 */
+        .color-stops-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 10px;
+            padding: 8px 16px 14px;
+            background: #fafcff;
+            border-top: 1px solid #edf2fa;
+            justify-content: center;
+        }
+        .color-stops-row .stop-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #2f3f58;
+            font-family: 'JetBrains Mono', 'Cascadia Code', monospace;
+            background: #f0f5fe;
+            padding: 3px 10px 3px 6px;
+            border-radius: 30px;
+            border: 1px solid #e2eaf6;
+        }
+        .color-stops-row .stop-item .swatch {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+        }
+        .color-stops-row .stop-item .pct {
+            color: #4e6585;
+            font-weight: 400;
+            font-size: 11px;
+        }
+
+        /* ----- CSS 代码区 ----- */
+        .code-section {
+            background: #1a1e2b;
+            border-radius: 16px;
+            padding: 18px 20px 16px;
+            margin-top: 4px;
+            position: relative;
+            border: 1px solid #2d3345;
+        }
+        .code-section .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .code-section .code-header .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #8d9fc0;
+        }
+        .code-section .code-header .actions {
+            display: flex;
+            gap: 8px;
+        }
+        .code-section .code-header .actions button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #c8d4e8;
+            padding: 5px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-family: inherit;
+        }
+        .code-section .code-header .actions button:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+        }
+        .code-section .code-header .actions button.copied {
+            background: #1f8b4c;
+            border-color: #1f8b4c;
+            color: #fff;
+        }
+        .code-section pre {
+            margin: 0;
+            padding: 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'JetBrains Mono', 'Cascadia Code', 'SF Mono', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #d4e0f0;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+        }
+        .code-section pre .css-gradient {
+            color: #f5c2a0;
+        }
+        .code-section pre .css-prop {
+            color: #8fc9ff;
+        }
+        .code-section pre .css-val {
+            color: #d4e0f0;
+        }
+        .code-section pre .css-hex {
+            color: #b8d9a0;
+        }
+        .code-section pre .css-pct {
+            color: #f5b8a0;
+        }
+
+        /* ----- 控制选项 ----- */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 18px 28px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #eef2f9;
+        }
+        .controls .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px 14px;
+            flex-wrap: wrap;
+        }
+        .controls label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #2f405b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .controls input[type="number"] {
+            width: 60px;
+            padding: 5px 6px;
+            border: 1.5px solid #d6dfed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            background: #fafcff;
+            color: #1a1e2b;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            outline: none;
+        }
+        .controls input[type="number"]:focus {
+            border-color: #3b6eff;
+            box-shadow: 0 0 0 3px rgba(59, 110, 255, 0.12);
+        }
+        .controls input[type="color"] {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #d6dfed;
+            border-radius: 8px;
+            padding: 2px;
+            cursor: pointer;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .controls input[type="color"]:focus {
+            border-color: #3b6eff;
+        }
+        .controls .color-pair {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .controls .color-pair .label-sm {
+            font-size: 12px;
+            color: #6f829f;
+            font-weight: 500;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            color: #8d9fc0;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px 0 4px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .app {
+                padding: 20px 16px 28px;
+                border-radius: 20px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .header h1 span {
+                font-size: 11px;
+                padding: 0 10px;
+            }
+            .upload-zone {
+                padding: 32px 12px;
+            }
+            .upload-zone .icon {
+                font-size: 40px;
+            }
+            .upload-zone p {
+                font-size: 15px;
+            }
+            .url-section {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 20px;
+                padding: 14px;
+                gap: 8px;
+            }
+            .url-section input[type="text"] {
+                min-width: unset;
+            }
+            .code-section pre {
+                font-size: 12px;
+            }
+            .controls {
+                gap: 12px;
+            }
+        }
+
+        /* 小工具 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app" id="app">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>
+                🎨 横向颜色提取
+                <span>CSS 渐变</span>
+            </h1>
+            <div class="badge">
+                <svg viewBox="0 0 24 24" width="16" height="16">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                    <path d="M2 17l10 5 10-5" />
+                    <path d="M2 12l10 5 10-5" />
+                </svg>
+                本地 & 在线
+            </div>
+        </div>
+
+        <!-- ===== 本地文件上传（独立） ===== -->
+        <div class="upload-zone" id="uploadZone">
+            <span class="icon">🖼️</span>
+            <p>拖拽图片到此处，或点击上传</p>
+            <div class="sub">支持 JPG / PNG / WebP 等格式</div>
+            <input type="file" id="fileInput" accept="image/*" />
+            <div class="hint">
+                <span>📐 横向采样</span>
+                <span>⚡ 自动分析</span>
+                <span>📋 一键复制</span>
+            </div>
+        </div>
+
+        <!-- ===== 在线图片加载（独立） ===== -->
+        <div class="url-section" onclick="event.stopPropagation();">
+            <span class="url-label">🌐 或输入图片网址</span>
+            <input type="text" id="imageUrlInput" placeholder="https://example.com/pic.jpg" />
+            <button id="loadUrlBtn">加载</button>
+            <span class="url-hint">(需支持跨域)</span>
+        </div>
+
+        <!-- ===== 结果区域 ===== -->
+        <div class="result" id="resultArea">
+            <!-- 预览双栏 -->
+            <div class="preview-grid">
+                <div class="preview-card">
+                    <div class="label">📷 原图</div>
+                    <div class="image-wrap">
+                        <img id="originImg" src="" alt="上传的图片" />
+                    </div>
+                </div>
+                <div class="preview-card">
+                    <div class="label">🌈 生成渐变</div>
+                    <div class="image-wrap" style="flex-direction:column; gap:6px;">
+                        <div class="gradient-bar" id="gradientBar">
+                            <div class="swatch-stops" id="swatchStops"></div>
+                        </div>
+                        <div style="font-size:12px; color:#6f829f; width:100%; text-align:center; padding:0 4px;" id="gradientMeta">
+                            共 <span id="stopCountDisplay">0</span> 个采样点
+                        </div>
+                    </div>
+                    <!-- 颜色点列表 -->
+                    <div class="color-stops-row" id="colorStopsRow"></div>
+                </div>
+            </div>
+
+            <!-- CSS 代码 -->
+            <div class="code-section">
+                <div class="code-header">
+                    <span class="label">📄 生成的 CSS（复制即用）</span>
+                    <div class="actions">
+                        <button id="copyBtn">📋 复制</button>
+                        <button id="resetBtn">↺ 重置</button>
+                    </div>
+                </div>
+                <pre id="cssOutput"><span class="empty-state">等待图片上传…</span></pre>
+            </div>
+
+            <!-- 控制选项 -->
+            <div class="controls">
+                <div class="control-group">
+                    <label>
+                        📍 采样点
+                        <input type="number" id="sampleCount" value="10" min="4" max="80" step="1" />
+                    </label>
+                    <button id="applyBtn" style="background:#eef2f9; border:none; border-radius:8px; padding:5px 16px; font-weight:500; font-size:13px; color:#1f2a3f; cursor:pointer; transition:background 0.2s;">应用</button>
+                </div>
+                <div class="control-group">
+                    <label class="color-pair">
+                        <span class="label-sm">文字</span>
+                        <input type="color" id="textColor" value="#000000" />
+                    </label>
+                    <label class="color-pair">
+                        <span class="label-sm">边框</span>
+                        <input type="color" id="borderColor" value="#ffffff" />
+                    </label>
+                </div>
+                <div style="margin-left:auto; font-size:13px; color:#7a8aa8;">
+                    <span id="imageInfo">未加载</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ----- DOM refs -----
+            const fileInput = document.getElementById('fileInput');
+            const uploadZone = document.getElementById('uploadZone');
+            const resultArea = document.getElementById('resultArea');
+            const originImg = document.getElementById('originImg');
+            const gradientBar = document.getElementById('gradientBar');
+            const swatchStops = document.getElementById('swatchStops');
+            const colorStopsRow = document.getElementById('colorStopsRow');
+            const cssOutput = document.getElementById('cssOutput');
+            const copyBtn = document.getElementById('copyBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const applyBtn = document.getElementById('applyBtn');
+            const sampleCountInput = document.getElementById('sampleCount');
+            const textColorInput = document.getElementById('textColor');
+            const borderColorInput = document.getElementById('borderColor');
+            const stopCountDisplay = document.getElementById('stopCountDisplay');
+            const imageInfo = document.getElementById('imageInfo');
+            // 独立 URL 相关
+            const imageUrlInput = document.getElementById('imageUrlInput');
+            const loadUrlBtn = document.getElementById('loadUrlBtn');
+
+            // ----- 状态 -----
+            let currentImageData = null; // { width, height, data: ImageData }
+            let currentColors = []; // [{ color, percent }]
+            let currentCss = '';
+            let isProcessing = false;
+
+            // ----- 工具函数 -----
+            function hexFromRgb(r, g, b) {
+                const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+                const toHex = (v) => clamp(v).toString(16).padStart(2, '0');
+                return '#' + toHex(r) + toHex(g) + toHex(b);
+            }
+
+            // 颜色缩写: #aabbcc -> #ABC, #ffffff -> #FFF
+            function shrinkColor(hex) {
+                if (!hex || typeof hex !== 'string') return '#000';
+                let c = hex.replace('#', '').toLowerCase();
+                if (c.length === 6) {
+                    let r = c[0];
+                    let g = c[1];
+                    let b = c[2];
+                    if (c[0] === c[1] && c[2] === c[3] && c[4] === c[5]) {
+                        return `#${r}${g}${b}`.toUpperCase();
+                    }
+                    return `#${c}`.toUpperCase();
+                }
+                if (c.length === 3) {
+                    return `#${c}`.toUpperCase();
+                }
+                return `#${c}`.toUpperCase();
+            }
+
+            // 从 ImageData 中提取横向采样颜色
+            function sampleColors(imageData, numPoints) {
+                const { width, height, data } = imageData;
+                const colors = [];
+                const step = width / (numPoints - 1);
+
+                for (let i = 0; i < numPoints; i++) {
+                    const x = Math.round(i * step);
+                    const clampedX = Math.min(x, width - 1);
+
+                    let rSum = 0,
+                        gSum = 0,
+                        bSum = 0;
+                    let count = 0;
+
+                    for (let y = 0; y < height; y++) {
+                        const idx = (y * width + clampedX) * 4;
+                        rSum += data[idx];
+                        gSum += data[idx + 1];
+                        bSum += data[idx + 2];
+                        count++;
+                    }
+
+                    const r = rSum / count;
+                    const g = gSum / count;
+                    const b = bSum / count;
+                    const hex = hexFromRgb(r, g, b);
+                    const percent = (i / (numPoints - 1)) * 100;
+                    colors.push({
+                        color: hex,
+                        percent: Math.round(percent * 10) / 10,
+                        r,
+                        g,
+                        b
+                    });
+                }
+
+                return colors;
+            }
+
+            // 生成 CSS 字符串（不含 background: 前缀，颜色缩写）
+            function buildCss(colors, textColor, borderColor) {
+                if (!colors || colors.length < 2) return '';
+
+                const stops = colors.map(c =>
+                    `${c.color} ${c.percent}%`
+                ).join(',');
+
+                const gradient = `linear-gradient(to right,${stops})`;
+                return `${gradient};color: ${shrinkColor(textColor)};border-color: ${shrinkColor(borderColor)};`;
+            }
+
+            // 更新界面
+            function render(colors, textColor, borderColor) {
+                if (!colors || colors.length < 2) {
+                    resultArea.classList.remove('visible');
+                    return;
+                }
+
+                resultArea.classList.add('visible');
+
+                const stopsStr = colors.map(c =>
+                    `${c.color} ${c.percent}%`
+                ).join(', ');
+                gradientBar.style.background = `linear-gradient(to right, ${stopsStr})`;
+
+                swatchStops.innerHTML = colors.map(c =>
+                    `<span class="dot" style="background:${c.color};"></span>`
+                ).join('');
+
+                colorStopsRow.innerHTML = colors.map(c =>
+                    `<span class="stop-item">
+                        <span class="swatch" style="background:${c.color};"></span>
+                        ${c.color}
+                        <span class="pct">${c.percent}%</span>
+                    </span>`
+                ).join('');
+
+                stopCountDisplay.textContent = colors.length;
+
+                const css = buildCss(colors, textColor, borderColor);
+                currentCss = css;
+
+                let html = css
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                html = html.replace(/(#[0-9a-fA-F]{3,6})/g, '<span class="css-hex">$1</span>');
+                html = html.replace(/(\d+\.?\d*%)/g, '<span class="css-pct">$1</span>');
+                html = html.replace(/(linear-gradient|to right)/g, '<span class="css-gradient">$1</span>');
+                html = html.replace(/\b(color|border-color)\b/g, '<span class="css-prop">$1</span>');
+
+                cssOutput.innerHTML = html;
+
+                if (currentImageData) {
+                    imageInfo.textContent = `${currentImageData.width} × ${currentImageData.height}`;
+                }
+            }
+
+            // ----- 核心处理：从 img 元素提取 -----
+            function processImage(img, numPoints, textColor, borderColor) {
+                if (isProcessing) return;
+                isProcessing = true;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let w = img.naturalWidth || img.width;
+                let h = img.naturalHeight || img.height;
+                const MAX_SIZE = 800;
+                if (w > MAX_SIZE) {
+                    const ratio = MAX_SIZE / w;
+                    w = MAX_SIZE;
+                    h = Math.round(h * ratio);
+                }
+                if (h > MAX_SIZE) {
+                    const ratio = MAX_SIZE / h;
+                    h = MAX_SIZE;
+                    w = Math.round(w * ratio);
+                }
+
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(img, 0, 0, w, h);
+
+                let imageData;
+                try {
+                    imageData = ctx.getImageData(0, 0, w, h);
+                } catch (e) {
+                    isProcessing = false;
+                    alert('无法读取图片像素数据，请尝试其他图片。');
+                    return;
+                }
+
+                currentImageData = {
+                    width: w,
+                    height: h,
+                    data: imageData
+                };
+
+                const colors = sampleColors(imageData, numPoints);
+                currentColors = colors;
+
+                render(colors, textColor, borderColor);
+
+                isProcessing = false;
+            }
+
+            // ----- 加载图片（统一入口） -----
+            function loadImageFromUrl(url) {
+                if (!url || url.trim() === '') {
+                    alert('请输入有效的图片网址。');
+                    return;
+                }
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; // 尝试跨域
+                img.onload = function() {
+                    originImg.src = url; // 显示原图
+                    const numPoints = parseInt(sampleCountInput.value, 10) || 10;
+                    const textColor = textColorInput.value || '#000000';
+                    const borderColor = borderColorInput.value || '#ffffff';
+                    processImage(img, numPoints, textColor, borderColor);
+                };
+                img.onerror = function() {
+                    alert('图片加载失败。请检查：\n1. 网址是否正确\n2. 图片是否支持跨域（CORS）\n3. 可尝试将图片下载后上传。');
+                };
+                img.src = url;
+            }
+
+            // 从文件加载
+            function loadImageFromFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                    alert('请上传有效的图片文件。');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        originImg.src = e.target.result;
+                        const numPoints = parseInt(sampleCountInput.value, 10) || 10;
+                        const textColor = textColorInput.value || '#000000';
+                        const borderColor = borderColorInput.value || '#ffffff';
+                        processImage(img, numPoints, textColor, borderColor);
+                    };
+                    img.onerror = () => {
+                        alert('图片加载失败，请尝试其他图片。');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => {
+                    alert('读取文件失败。');
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // ----- 事件绑定 -----
+            // 文件上传（独立区域）
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    loadImageFromFile(e.target.files[0]);
+                }
+                e.target.value = '';
+            });
+
+            // 拖拽
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    loadImageFromFile(files[0]);
+                }
+            });
+
+            // 点击上传区域触发文件选择（仅当点击区域本身或非input元素）
+            uploadZone.addEventListener('click', (e) => {
+                // 只有点击 upload-zone 内部且不是 input[type="file"] 时才触发
+                if (e.target.tagName !== 'INPUT') {
+                    fileInput.click();
+                }
+            });
+
+            // URL 加载（独立区域）
+            loadUrlBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const url = imageUrlInput.value.trim();
+                loadImageFromUrl(url);
+            });
+
+            imageUrlInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    loadUrlBtn.click();
+                }
+            });
+
+            // 应用按钮
+            applyBtn.addEventListener('click', () => {
+                if (!currentImageData) {
+                    alert('请先上传一张图片。');
+                    return;
+                }
+                const numPoints = parseInt(sampleCountInput.value, 10) || 10;
+                if (numPoints < 3) {
+                    alert('采样点至少为 3。');
+                    sampleCountInput.value = 3;
+                    return;
+                }
+                if (numPoints > 80) {
+                    alert('采样点最多为 80。');
+                    sampleCountInput.value = 80;
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => {
+                    const textColor = textColorInput.value || '#000000';
+                    const borderColor = borderColorInput.value || '#ffffff';
+                    processImage(img, numPoints, textColor, borderColor);
+                };
+                img.onerror = () => {
+                    alert('重新加载图片失败。');
+                };
+                img.src = originImg.src;
+            });
+
+            // 颜色变更
+            textColorInput.addEventListener('input', () => {
+                if (currentColors.length > 0) {
+                    const textColor = textColorInput.value || '#000000';
+                    const borderColor = borderColorInput.value || '#ffffff';
+                    render(currentColors, textColor, borderColor);
+                }
+            });
+            borderColorInput.addEventListener('input', () => {
+                if (currentColors.length > 0) {
+                    const textColor = textColorInput.value || '#000000';
+                    const borderColor = borderColorInput.value || '#ffffff';
+                    render(currentColors, textColor, borderColor);
+                }
+            });
+
+            // 复制
+            copyBtn.addEventListener('click', () => {
+                if (!currentCss) {
+                    alert('还没有生成 CSS，请先上传图片。');
+                    return;
+                }
+                navigator.clipboard.writeText(currentCss).then(() => {
+                    copyBtn.textContent = '✅ 已复制';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = '📋 复制';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = currentCss;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyBtn.textContent = '✅ 已复制';
+                        copyBtn.classList.add('copied');
+                        setTimeout(() => {
+                            copyBtn.textContent = '📋 复制';
+                            copyBtn.classList.remove('copied');
+                        }, 2000);
+                    } catch (e) {
+                        alert('复制失败，请手动复制。');
+                    }
+                    document.body.removeChild(textarea);
+                });
+            });
+
+            // 重置
+            resetBtn.addEventListener('click', () => {
+                currentImageData = null;
+                currentColors = [];
+                currentCss = '';
+                resultArea.classList.remove('visible');
+                originImg.src = '';
+                gradientBar.style.background = '#eef2f9';
+                swatchStops.innerHTML = '';
+                colorStopsRow.innerHTML = '';
+                cssOutput.innerHTML = '<span class="empty-state">等待图片上传…</span>';
+                imageInfo.textContent = '未加载';
+                fileInput.value = '';
+                imageUrlInput.value = '';
+                sampleCountInput.value = 10;
+            });
+
+            // 采样点回车触发
+            sampleCountInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    applyBtn.click();
+                }
+            });
+
+            // ----- 初始化 -----
+            resultArea.classList.remove('visible');
+            cssOutput.innerHTML = '<span class="empty-state">等待图片上传…</span>';
+
+        })();
+    </script>
+
+</body>
+</html>

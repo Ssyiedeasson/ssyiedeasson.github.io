@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>🎉❤七夕节脱单攻略❤🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fce4ec 0%, #f8e8f5 30%, #f3e5f5 60%, #fce4ec 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'PingFang SC', 'Segoe UI', 'Helvetica Neue', sans-serif;
+            padding: 16px;
+            user-select: none;
+            position: relative;
+        }
+
+        /* 漂浮爱心背景 */
+        .floating-hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .floating-hearts span {
+            position: absolute;
+            font-size: 22px;
+            opacity: 0.15;
+            animation: floatHeart 18s infinite linear;
+            color: #f06292;
+        }
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.6);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.25;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(720deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 580px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 48px;
+            padding: 24px 22px 28px;
+            box-shadow: 0 20px 80px rgba(233, 30, 99, 0.18), 0 8px 32px rgba(233, 30, 99, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        /* 标题 */
+        .header {
+            text-align: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e91e63, #f06292, #ec407a, #e91e63);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: none;
+            animation: shimmerTitle 3s ease-in-out infinite;
+        }
+        @keyframes shimmerTitle {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .header .sub {
+            font-size: 13px;
+            color: #ad1457;
+            opacity: 0.6;
+            letter-spacing: 4px;
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        /* 转盘容器 */
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+            aspect-ratio: 1/1;
+        }
+
+        canvas#wheelCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 8px rgba(255, 255, 255, 0.6),
+                0 0 0 14px rgba(233, 30, 99, 0.10),
+                0 12px 48px rgba(233, 30, 99, 0.20),
+                inset 0 0 40px rgba(0, 0, 0, 0.06);
+            transition: box-shadow 0.4s;
+            cursor: default;
+            touch-action: none;
+        }
+        canvas#wheelCanvas.spinning {
+            box-shadow:
+                0 0 0 8px rgba(255, 255, 255, 0.8),
+                0 0 0 14px rgba(233, 30, 99, 0.25),
+                0 16px 60px rgba(233, 30, 99, 0.35),
+                inset 0 0 40px rgba(0, 0, 0, 0.06);
+        }
+
+        /* 指针 (粉色系) */
+        .pointer {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 36px solid #f06292;
+            filter: drop-shadow(0 4px 16px rgba(233, 30, 99, 0.5)) drop-shadow(0 0 12px rgba(233, 30, 99, 0.2));
+            transition: filter 0.3s;
+        }
+        .pointer::after {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: -11px;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle at 30% 30%, #fff0f5, #f06292);
+            border-radius: 50%;
+            box-shadow: 0 0 24px rgba(233, 30, 99, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+        .pointer.spinning {
+            filter: drop-shadow(0 4px 24px rgba(233, 30, 99, 0.7)) drop-shadow(0 0 30px rgba(233, 30, 99, 0.4));
+        }
+
+        /* ---- 聊天区域 ---- */
+        .chat-area {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 16px 14px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: inset 0 2px 8px rgba(233, 30, 99, 0.04);
+        }
+
+        /* 消息列表 */
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .message-list::-webkit-scrollbar {
+            width: 3px;
+        }
+        .message-list::-webkit-scrollbar-thumb {
+            background: #f06292;
+            border-radius: 10px;
+        }
+        .message-list::-webkit-scrollbar-track {
+            background: rgba(233, 30, 99, 0.04);
+            border-radius: 10px;
+        }
+
+        /* 单条消息 */
+        .msg {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: msgIn 0.4s ease-out;
+        }
+        @keyframes msgIn {
+            0% {
+                opacity: 0;
+                transform: translateY(12px) scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .msg .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: linear-gradient(135deg, #f8bbd0, #f06292);
+            box-shadow: 0 2px 12px rgba(233, 30, 99, 0.15);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            position: relative;
+        }
+        .msg .avatar:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 20px rgba(233, 30, 99, 0.30);
+        }
+        .msg .avatar:active {
+            transform: scale(0.92);
+        }
+        .msg .avatar .badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #e91e63;
+            color: #fff;
+            font-size: 8px;
+            padding: 1px 5px;
+            border-radius: 10px;
+            border: 1px solid #fff;
+            font-weight: 600;
+        }
+        .msg .avatar .click-hint {
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            font-size: 14px;
+            animation: bounceHint 1.8s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+        @keyframes bounceHint {
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-4px) scale(1.1);
+            }
+        }
+
+        .msg .bubble {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 10px 14px;
+            border-radius: 6px 16px 16px 16px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #4a1a2f;
+            box-shadow: 0 2px 8px rgba(233, 30, 99, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            max-width: 85%;
+            word-break: break-word;
+        }
+        .msg .bubble .highlight-text {
+            color: #e91e63;
+            font-weight: 600;
+            background: rgba(233, 30, 99, 0.08);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+        .msg .bubble .emoji-big {
+            font-size: 18px;
+        }
+
+        .msg.self {
+            flex-direction: row-reverse;
+        }
+        .msg.self .bubble {
+            border-radius: 16px 6px 16px 16px;
+            background: rgba(233, 30, 99, 0.10);
+            border-color: rgba(233, 30, 99, 0.12);
+            color: #4a1a2f;
+        }
+
+        /* 输入区域 */
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 60px;
+            padding: 4px 4px 4px 18px;
+            border: 1px solid rgba(233, 30, 99, 0.12);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-row:focus-within {
+            border-color: #f06292;
+            box-shadow: 0 0 0 4px rgba(233, 30, 99, 0.08);
+        }
+
+        .input-row input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #4a1a2f;
+            outline: none;
+            font-family: inherit;
+            min-width: 0;
+        }
+        .input-row input::placeholder {
+            color: #b07a8a;
+            font-weight: 300;
+            font-size: 14px;
+        }
+
+        .input-row .send-btn {
+            background: linear-gradient(135deg, #f06292, #ec407a);
+            border: none;
+            border-radius: 60px;
+            padding: 10px 22px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(233, 30, 99, 0.25);
+            font-family: inherit;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .input-row .send-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(233, 30, 99, 0.35);
+        }
+        .input-row .send-btn:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+        .input-row .send-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .input-row .send-btn .icon {
+            font-size: 18px;
+        }
+
+        /* 提示文字 */
+        .hint-text {
+            text-align: center;
+            font-size: 12px;
+            color: #b07a8a;
+            margin-top: 10px;
+            letter-spacing: 0.3px;
+            font-weight: 300;
+        }
+        .hint-text .keyword {
+            color: #e91e63;
+            font-weight: 600;
+            background: rgba(233, 30, 99, 0.06);
+            padding: 0 6px;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        /* 结果展示 */
+        .result-box {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 12px 18px;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: all 0.4s ease;
+        }
+        .result-box .result-text {
+            font-size: 15px;
+            color: rgba(74, 26, 47, 0.5);
+            text-align: center;
+            line-height: 1.6;
+            transition: all 0.4s ease;
+        }
+        .result-box .result-text.active {
+            color: #4a1a2f;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .result-box .result-text .highlight {
+            background: linear-gradient(135deg, #e91e63, #f06292);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .result-box .result-text .sub {
+            font-size: 12px;
+            opacity: 0.5;
+            color: #b07a8a;
+            display: block;
+            margin-top: 2px;
+            -webkit-text-fill-color: #b07a8a;
+        }
+
+        /* 图例 */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px 12px;
+            margin-top: 16px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #4a1a2f;
+            white-space: nowrap;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .legend-item .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .legend-item .prob {
+            font-size: 9px;
+            opacity: 0.5;
+            margin-left: 1px;
+            font-weight: 300;
+        }
+        .legend-item .label {
+            max-width: 54px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 彩带 */
+        .celebration {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(110vh) rotate(720deg) scale(0.2);
+            }
+        }
+
+        /* 响应式 */
+        @media (max-width: 500px) {
+            .container {
+                padding: 16px 14px 20px;
+                border-radius: 32px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .header .sub {
+                font-size: 11px;
+            }
+            .wheel-wrapper {
+                max-width: 320px;
+            }
+            .pointer {
+                border-left-width: 12px;
+                border-right-width: 12px;
+                border-top-width: 28px;
+                top: -6px;
+            }
+            .pointer::after {
+                width: 18px;
+                height: 18px;
+                top: -32px;
+                left: -9px;
+            }
+            .msg .bubble {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+            .msg .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 18px;
+            }
+            .input-row {
+                padding: 2px 2px 2px 14px;
+            }
+            .input-row input {
+                font-size: 14px;
+                padding: 10px 0;
+            }
+            .input-row .send-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .result-box .result-text {
+                font-size: 13px;
+            }
+            .result-box .result-text.active {
+                font-size: 16px;
+            }
+            .legend-item {
+                font-size: 10px;
+            }
+            .legend-item .label {
+                max-width: 40px;
+            }
+            .hint-text {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 12px 10px 16px;
+                border-radius: 24px;
+            }
+            .header h1 {
+                font-size: 17px;
+            }
+            .wheel-wrapper {
+                max-width: 260px;
+            }
+            .pointer {
+                border-left-width: 10px;
+                border-right-width: 10px;
+                border-top-width: 22px;
+                top: -4px;
+            }
+            .pointer::after {
+                width: 14px;
+                height: 14px;
+                top: -26px;
+                left: -7px;
+            }
+            .msg .bubble {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+            .msg .avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 16px;
+            }
+            .input-row input {
+                font-size: 13px;
+                padding: 8px 0;
+            }
+            .input-row .send-btn {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            .result-box .result-text {
+                font-size: 12px;
+            }
+            .result-box .result-text.active {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 漂浮爱心 -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <div class="container">
+        <!-- 标题 -->
+        <div class="header">
+            <h1>🎉❤七夕节脱单攻略❤🎉</h1>
+            <div class="sub">✨ 输入暗号 · 解锁缘分 ✨</div>
+        </div>
+
+        <!-- 转盘 -->
+        <div class="wheel-wrapper">
+            <canvas id="wheelCanvas" width="600" height="600"></canvas>
+            <div class="pointer" id="pointer"></div>
+        </div>
+
+        <!-- 聊天区域 -->
+        <div class="chat-area">
+            <div class="message-list" id="messageList">
+                <!-- 群主消息 1 -->
+                <div class="msg">
+                    <div class="avatar" id="avatarTrigger" title="点击我快速发送暗号">
+                        👩
+                        <span class="badge">群主</span>
+                        <span class="click-hint">👆</span>
+                    </div>
+                    <div class="bubble">
+                        七夕快乐呀～ 想测测你的脱单运势吗？<br />
+                        在下面输入 <span class="highlight-text">「咱俩试试？」</span> 或者 <span class="highlight-text">点击我的头像</span> ～💕
+                    </div>
+                </div>
+                <!-- 群主消息 2 -->
+                <div class="msg">
+                    <div class="avatar" id="avatarTrigger2" title="点击我快速发送暗号">
+                        👩
+                        <span class="badge">群主</span>
+                    </div>
+                    <div class="bubble">
+                        输入 <span class="highlight-text">「咱俩试试？」</span> 就能知道你的缘分答案啦！<br />
+                        <span class="emoji-big">💝 试试看吧～</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 输入行 -->
+            <div class="input-row">
+                <input type="text" id="chatInput" placeholder="输入「咱俩试试？」或点击群主头像" autocomplete="off" />
+                <button class="send-btn" id="sendBtn">
+                    <span class="icon">💌</span> 发送
+                </button>
+            </div>
+            <div class="hint-text">
+                💡 输入 <span class="keyword">咱俩试试？</span>（全角/半角问号均可）或点击群主头像 👆
+            </div>
+        </div>
+
+        <!-- 结果 -->
+        <div class="result-box" id="resultBox">
+            <div class="result-text" id="resultText">💗 输入暗号，转盘为你而转 💗</div>
+        </div>
+
+        <!-- 图例 -->
+        <div class="legend" id="legendContainer"></div>
+    </div>
+
+    <!-- 彩带容器 -->
+    <div class="celebration" id="celebrationContainer"></div>
+
+    <script>
+        // ============================================================
+        //  数据 (保持原样)
+        // ============================================================
+        const options = [{
+            id: 0,
+            label: '？',
+            fullText: '？',
+            prob: 0.50,
+            color: '#FF6B8A'
+        }, {
+            id: 1,
+            label: '喵喵喵？',
+            fullText: '喵喵喵？',
+            prob: 0.20,
+            color: '#4DD0E1'
+        }, {
+            id: 2,
+            label: '不可以哦~',
+            fullText: '大哥哥不可以哦~',
+            prob: 0.10,
+            color: '#FFB74D'
+        }, {
+            id: 3,
+            label: '杂鱼~♡',
+            fullText: '杂鱼~♡ 杂鱼~♡',
+            prob: 0.10,
+            color: '#81C784'
+        }, {
+            id: 4,
+            label: '下次一定',
+            fullText: '下次一定呐',
+            prob: 0.08,
+            color: '#CE93D8'
+        }, {
+            id: 5,
+            label: '真的嘛？！',
+            fullText: '真的可以嘛？！',
+            prob: 0.01,
+            color: '#FF8A65'
+        }, {
+            id: 6,
+            label: '好哦宝宝',
+            fullText: '好哦宝宝',
+            prob: 0.0099,
+            color: '#FFD54F'
+        }, {
+            id: 7,
+            label: '主人♡',
+            fullText: '好呐主人♡',
+            prob: 0.000099,
+            color: '#E57373'
+        }, {
+            id: 8,
+            label: '狗修金~',
+            fullText: '诶？榨多了出现幻觉了嘛？躺下好好放松放松吧，狗修金撒嘛~♡',
+            prob: 0.0000001,
+            color: '#9575CD'
+        }, {
+            id: 9,
+            label: '无结果',
+            fullText: '无结果',
+            prob: 0.0000009,
+            color: '#78909C'
+        }];
+
+        // 补全概率到 1
+        const totalProb = options.reduce((s, o) => s + o.prob, 0);
+        if (totalProb < 1) {
+            options[options.length - 1].prob += (1 - totalProb);
+        }
+
+        // 累积概率 (用于抽奖)
+        let cumProb = 0;
+        const sectors = options.map((o) => {
+            const start = cumProb;
+            cumProb += o.prob;
+            const end = cumProb;
+            return {
+                ...o,
+                prob: o.prob,
+                angleStart: start,
+                angleEnd: end,
+            };
+        });
+
+        // ============================================================
+        //  显示角度 (放大极小概率)
+        // ============================================================
+        const displayWeights = sectors.map(s => Math.pow(s.prob, 0.35));
+        const sumDisplay = displayWeights.reduce((a, b) => a + b, 0);
+        let cumDisplay = 0;
+        sectors.forEach((s, i) => {
+            const w = displayWeights[i] / sumDisplay;
+            s.displayStart = cumDisplay;
+            cumDisplay += w;
+            s.displayEnd = cumDisplay;
+            s.displayMid = (s.displayStart + s.displayEnd) / 2;
+        });
+
+        // ============================================================
+        //  绘制转盘
+        // ============================================================
+        const canvas = document.getElementById('wheelCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        const cx = W / 2;
+        const cy = H / 2;
+        const radius = Math.min(W, H) * 0.42;
+
+        let currentRotation = 0;
+        let isSpinning = false;
+        let animId = null;
+        const POINTER_ANGLE = -Math.PI / 2;
+
+        function drawWheel(rotation) {
+            ctx.clearRect(0, 0, W, H);
+
+            // 光晕
+            const grad = ctx.createRadialGradient(cx, cy, radius * 0.85, cx, cy, radius * 1.12);
+            grad.addColorStop(0, 'rgba(255,255,255,0)');
+            grad.addColorStop(0.7, 'rgba(233,30,99,0.02)');
+            grad.addColorStop(1, 'rgba(233,30,99,0.08)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 1.12, 0, 2 * Math.PI);
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            // 扇区
+            for (let i = 0; i < sectors.length; i++) {
+                const s = sectors[i];
+                const start = s.displayStart * 2 * Math.PI + rotation;
+                const end = s.displayEnd * 2 * Math.PI + rotation;
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, start, end);
+                ctx.closePath();
+
+                ctx.fillStyle = s.color;
+                ctx.fill();
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.stroke();
+            }
+
+            // 文字
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let i = 0; i < sectors.length; i++) {
+                const s = sectors[i];
+                const mid = s.displayMid * 2 * Math.PI + rotation;
+                const angleSpan = (s.displayEnd - s.displayStart) * 2 * Math.PI;
+
+                const textR = radius * 0.70;
+                const x = cx + Math.cos(mid) * textR;
+                const y = cy + Math.sin(mid) * textR;
+
+                let fontSize = 16;
+                if (angleSpan < 0.05) fontSize = 10;
+                else if (angleSpan < 0.10) fontSize = 12;
+                else if (angleSpan < 0.20) fontSize = 14;
+                else if (angleSpan < 0.40) fontSize = 16;
+                else fontSize = 18;
+
+                if (angleSpan < 0.008) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2.5, 0, 2 * Math.PI);
+                    ctx.fill();
+                    continue;
+                }
+
+                ctx.font = `600 ${fontSize}px "PingFang SC","Segoe UI",sans-serif`;
+                ctx.shadowColor = 'rgba(0,0,0,0.6)';
+                ctx.shadowBlur = 8;
+
+                const bright = getColorBrightness(s.color);
+                ctx.fillStyle = bright > 160 ? '#2d0f1a' : '#ffffff';
+
+                let displayText = s.label;
+                if (displayText.length > 5 && angleSpan < 0.15) {
+                    displayText = displayText.slice(0, 4) + '…';
+                }
+
+                ctx.save();
+                ctx.translate(x, y);
+                let rot = mid;
+                if (rot > Math.PI / 2 || rot < -Math.PI / 2) {
+                    rot += Math.PI;
+                }
+                ctx.rotate(rot);
+                ctx.fillText(displayText, 0, 0);
+                ctx.restore();
+
+                ctx.shadowBlur = 0;
+            }
+
+            // 中心装饰 (粉色系)
+            const centerGrad = ctx.createRadialGradient(cx - 8, cy - 8, 2, cx, cy, radius * 0.16);
+            centerGrad.addColorStop(0, '#fff5f7');
+            centerGrad.addColorStop(0.4, '#f8bbd0');
+            centerGrad.addColorStop(1, '#ec407a');
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.12, 0, 2 * Math.PI);
+            ctx.fillStyle = centerGrad;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx - 6, cy - 8, radius * 0.035, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fill();
+
+            // 外圈装饰
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.stroke();
+
+            const dotCount = 32;
+            for (let i = 0; i < dotCount; i++) {
+                const angle = (i / dotCount) * 2 * Math.PI + rotation;
+                const dotR = radius + 6;
+                const xd = cx + Math.cos(angle) * dotR;
+                const yd = cy + Math.sin(angle) * dotR;
+                ctx.beginPath();
+                ctx.arc(xd, yd, 2.5, 0, 2 * Math.PI);
+                ctx.fillStyle = i % 2 === 0 ? 'rgba(233,30,99,0.20)' : 'rgba(255,255,255,0.10)';
+                ctx.fill();
+            }
+
+            const innerShadow = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius);
+            innerShadow.addColorStop(0, 'rgba(0,0,0,0)');
+            innerShadow.addColorStop(0.8, 'rgba(0,0,0,0)');
+            innerShadow.addColorStop(1, 'rgba(0,0,0,0.12)');
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = innerShadow;
+            ctx.fill();
+        }
+
+        function getColorBrightness(hex) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return 0.299 * r + 0.587 * g + 0.114 * b;
+        }
+
+        // ============================================================
+        //  图例
+        // ============================================================
+        function renderLegend() {
+            const container = document.getElementById('legendContainer');
+            container.innerHTML = sectors.map(s => `
+                <div class="legend-item">
+                    <span class="color-dot" style="background:${s.color};"></span>
+                    <span class="label">${s.fullText}</span>
+                    <span class="prob">${(s.prob * 100).toFixed(6)}%</span>
+                </div>
+            `).join('');
+        }
+        renderLegend();
+
+        // ============================================================
+        //  抽奖逻辑
+        // ============================================================
+        function getSpinResult() {
+            const r = Math.random();
+            let cum = 0;
+            for (let i = 0; i < sectors.length; i++) {
+                cum += sectors[i].prob;
+                if (r < cum) return i;
+            }
+            return sectors.length - 1;
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const pointer = document.getElementById('pointer');
+            const resultText = document.getElementById('resultText');
+            const sendBtn = document.getElementById('sendBtn');
+            const chatInput = document.getElementById('chatInput');
+
+            sendBtn.disabled = true;
+            chatInput.disabled = true;
+            pointer.classList.add('spinning');
+            canvas.classList.add('spinning');
+            resultText.className = 'result-text';
+            resultText.textContent = '💕 缘分正在转动…';
+
+            const winIndex = getSpinResult();
+            const targetSector = sectors[winIndex];
+            const targetMid = targetSector.displayMid * 2 * Math.PI;
+
+            const extraSpins = 6 + Math.floor(Math.random() * 4);
+            let targetRotation = POINTER_ANGLE - targetMid + extraSpins * 2 * Math.PI;
+            while (targetRotation <= currentRotation) {
+                targetRotation += 2 * Math.PI;
+            }
+
+            const startRotation = currentRotation;
+            const deltaRotation = targetRotation - startRotation;
+            const duration = 4000 + Math.random() * 1500;
+            const startTime = performance.now();
+
+            function animateSpin(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3) * Math.cos(progress * Math.PI * 0.3);
+                const currentRot = startRotation + deltaRotation * ease;
+                currentRotation = currentRot;
+                drawWheel(currentRot);
+
+                if (progress < 1) {
+                    animId = requestAnimationFrame(animateSpin);
+                } else {
+                    currentRotation = targetRotation;
+                    drawWheel(targetRotation);
+                    showResult(winIndex);
+                    isSpinning = false;
+                    sendBtn.disabled = false;
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                    pointer.classList.remove('spinning');
+                    canvas.classList.remove('spinning');
+                }
+            }
+
+            animId = requestAnimationFrame(animateSpin);
+        }
+
+        function showResult(index) {
+            const s = sectors[index];
+            const resultText = document.getElementById('resultText');
+            const full = s.fullText;
+            const prob = (s.prob * 100).toFixed(6);
+            let display = full;
+            if (full.length > 30) {
+                display = full.slice(0, 28) + '…';
+            }
+            resultText.className = 'result-text active';
+            resultText.innerHTML = `
+                🎉 抽中了：<span class="highlight">${display}</span>
+                <span class="sub">概率 ${prob}%</span>
+            `;
+
+            if (s.prob > 0.001) {
+                launchCelebration();
+            }
+        }
+
+        // ============================================================
+        //  彩带
+        // ============================================================
+        function launchCelebration() {
+            const container = document.getElementById('celebrationContainer');
+            const colors = ['#FF6B8A', '#FFD54F', '#4DD0E1', '#81C784', '#CE93D8', '#FF8A65', '#9575CD', '#FFB74D', '#E57373',
+                '#F06292', '#EC407A', '#F8BBD0'
+            ];
+            for (let i = 0; i < 60; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti';
+                const size = 6 + Math.random() * 10;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const left = Math.random() * 100;
+                const delay = Math.random() * 1.2;
+                const dur = 2.2 + Math.random() * 2;
+                const rot = Math.random() * 720;
+                el.style.cssText = `
+                    left: ${left}%;
+                    top: -10px;
+                    width: ${size}px;
+                    height: ${size * 0.6}px;
+                    background: ${color};
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    animation-delay: ${delay}s;
+                    animation-duration: ${dur}s;
+                    transform: rotate(${rot}deg);
+                    box-shadow: 0 0 6px rgba(233,30,99,0.15);
+                `;
+                container.appendChild(el);
+                setTimeout(() => el.remove(), (delay + dur) * 1000 + 100);
+            }
+        }
+
+        // ============================================================
+        //  交互逻辑
+        // ============================================================
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const avatarTriggers = document.querySelectorAll('.avatar');
+
+        // 检测输入是否为 "咱俩试试？" (全角/半角问号)
+        function isMagicWord(text) {
+            const trimmed = text.trim();
+            // 匹配 "咱俩试试？" 或 "咱俩试试?" (全角/半角)
+            return /^咱俩试试[？?]$/.test(trimmed);
+        }
+
+        // 触发抽奖
+        function trySpin() {
+            if (isSpinning) return;
+            const val = chatInput.value.trim();
+            if (isMagicWord(val)) {
+                // 清空输入
+                chatInput.value = '';
+                // 添加一条用户消息
+                addUserMessage('咱俩试试？');
+                // 执行抽奖
+                spinWheel();
+            } else {
+                // 提示
+                const resultText = document.getElementById('resultText');
+                resultText.className = 'result-text';
+                resultText.textContent = '💗 输入「咱俩试试？」才能开启缘分转盘哦～';
+                setTimeout(() => {
+                    if (!isSpinning && !document.querySelector('.result-text.active')) {
+                        resultText.textContent = '💗 输入暗号，转盘为你而转 💗';
+                    }
+                }, 2000);
+                chatInput.focus();
+                chatInput.select();
+            }
+        }
+
+        // 添加用户消息
+        function addUserMessage(text) {
+            const list = document.getElementById('messageList');
+            const div = document.createElement('div');
+            div.className = 'msg self';
+            div.innerHTML = `
+                <div class="avatar" style="background:linear-gradient(135deg,#f8bbd0,#f06292);font-size:20px;">
+                    🙋
+                </div>
+                <div class="bubble">${text}</div>
+            `;
+            list.appendChild(div);
+            list.scrollTop = list.scrollHeight;
+        }
+
+        // 点击群主头像 -> 自动填入并发送
+        function onAvatarClick() {
+            if (isSpinning) return;
+            chatInput.value = '咱俩试试？';
+            // 直接触发抽奖 (相当于自动发送)
+            trySpin();
+        }
+
+        // 事件绑定
+        sendBtn.addEventListener('click', trySpin);
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                trySpin();
+            }
+        });
+
+        // 点击头像触发
+        avatarTriggers.forEach(el => {
+            el.addEventListener('click', onAvatarClick);
+        });
+
+        // 聚焦时清空提示状态
+        chatInput.addEventListener('focus', () => {
+            const resultText = document.getElementById('resultText');
+            if (!isSpinning && !document.querySelector('.result-text.active')) {
+                resultText.textContent = '💗 输入暗号，转盘为你而转 💗';
+            }
+        });
+
+        // ============================================================
+        //  漂浮爱心 (背景装饰)
+        // ============================================================
+        function createFloatingHearts() {
+            const container = document.getElementById('floatingHearts');
+            const emojis = ['❤️', '💕', '💗', '💖', '💘', '💝', '🌸', '🌺'];
+            for (let i = 0; i < 20; i++) {
+                const span = document.createElement('span');
+                span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                span.style.left = Math.random() * 100 + '%';
+                span.style.fontSize = (14 + Math.random() * 24) + 'px';
+                span.style.animationDuration = (14 + Math.random() * 20) + 's';
+                span.style.animationDelay = (Math.random() * 20) + 's';
+                container.appendChild(span);
+            }
+        }
+        createFloatingHearts();
+
+        // ============================================================
+        //  初始化绘制
+        // ============================================================
+        drawWheel(0);
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                drawWheel(currentRotation);
+            }, 100);
+        });
+
+        console.log('💕 七夕脱单攻略转盘已加载！');
+        console.log('📊 各选项实际概率:', sectors.map(s => `${s.fullText}: ${(s.prob*100).toFixed(8)}%`).join('\n'));
+        console.log('💡 输入「咱俩试试？」或点击群主头像触发转盘');
+    </script>
+
+</body>
+</html>

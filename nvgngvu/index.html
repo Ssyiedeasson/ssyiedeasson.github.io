@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>跳转中</title>
+</head>
+<body>
+<script>
+(function () {
+  var qs = new URLSearchParams(location.search);
+
+  
+  var DEFAULT_URL = 'http://www.bilibili.com/video/BV1GJ411x7h7';
+  var target = qs.get('url') || DEFAULT_URL;
+
+  // 没写协议就补上 https://
+  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(target)) {
+    target = 'https://' + target;
+  }
+  // 挡掉 javascript:、data: 等危险协议
+  if (!/^https?:\/\//i.test(target)) {
+    target = DEFAULT_URL;
+  }
+
+  /* 可选：只允许跳到指定域名（需要就取消注释）
+  var ALLOW = ['example.com', 'www.example.com'];
+  try {
+    if (ALLOW.indexOf(new URL(target).hostname) === -1) target = DEFAULT_URL;
+  } catch (e) { target = DEFAULT_URL; }
+  */
+
+  /* ===== 2. 延时，单位毫秒，0 = 立即跳 ===== */
+  var delay = parseInt(qs.get('delay') || '0', 10);
+  if (isNaN(delay) || delay < 0) delay = 0;
+
+  /* ===== 3. 兜底 meta refresh（防止 JS 被拦） ===== */
+  var meta = document.createElement('meta');
+  meta.httpEquiv = 'refresh';
+  meta.content = (delay / 1000) + ';url=' + target;
+  document.head.appendChild(meta);
+
+  /* ===== 4. 执行跳转 ===== */
+  function go() {
+    // 用 replace，不留下本页历史
+    location.replace(target);
+  }
+
+  if (delay === 0) {
+    go();
+  } else {
+    setTimeout(go, delay);
+  }
+})();
+</script>
+</body>
+</html>
